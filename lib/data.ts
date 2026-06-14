@@ -228,7 +228,7 @@ export async function fetchIndicatorHistory(
   countryId: string,
 ): Promise<IndicatorHistory | null> {
   // Fetch all readings for this indicator/country, newest first
-  const isGlobal = countryId === 'GLOBAL'
+  let isGlobal = countryId === 'GLOBAL'
 
   let query = supabase
     .from('readings')
@@ -242,7 +242,22 @@ export async function fetchIndicatorHistory(
     query = query.eq('country_id', countryId)
   }
 
-  const { data: rows, error } = await query
+  let { data: rows, error } = await query
+
+  // Global series (e.g. C1 Brent) are stored with country_id = null.
+  // If no rows found for a specific country, retry as global.
+  if (!error && (!rows || rows.length === 0) && !isGlobal) {
+    isGlobal = true
+    const fallback = await supabase
+      .from('readings')
+      .select('date, value, source, source_series_id')
+      .eq('indicator_id', indicatorId)
+      .is('country_id', null)
+      .order('date', { ascending: true })
+    rows = fallback.data
+    error = fallback.error
+  }
+
   if (error || !rows || rows.length === 0) return null
 
   // Fetch indicator + country metadata
