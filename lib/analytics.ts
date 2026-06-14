@@ -112,8 +112,19 @@ export function moverLabel(m: Mover): string {
 
 // Strongest weekly movers (markets) — sorted by magnitude, split gainers/losers.
 export function topMovers(cells: HeatmapCell[], n = 5): { gainers: Mover[]; losers: Mover[] } {
+  // Global series (e.g. C1 Brent) have country_id = null in the DB but are
+  // fanned out to every country row in the heatmap. Deduplicate by indicatorId
+  // for these so they appear only once in the movers list.
+  const GLOBAL_INDICATORS = new Set(['C1'])
+  const seenGlobal = new Set<string>()
   const movers: Mover[] = cells
     .filter(c => c.wowPct !== null)
+    .filter(c => {
+      if (!GLOBAL_INDICATORS.has(c.indicatorId)) return true
+      if (seenGlobal.has(c.indicatorId)) return false
+      seenGlobal.add(c.indicatorId)
+      return true
+    })
     .map(c => ({
       indicatorId: c.indicatorId,
       indicatorName: c.indicatorName,
