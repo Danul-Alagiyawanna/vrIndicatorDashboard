@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+
+:root {
+  --background: #060809;
+  --foreground: #e7eaee;
+
+  /* Terminal accent palette */
+  --term-cyan: #22d3ee;
+  --term-amber: #fbbf24;
+  --grid-line: rgba(120, 140, 160, 0.05);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Guard against horizontal page overflow from wide children (ticker, heatmap)
+   WITHOUT breaking `position: sticky`. `overflow-x: clip` does not establish a
+   scroll container, so descendant sticky headers still pin to the viewport —
+   unlike `overflow-x: hidden`, which would trap them. */
+html {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+body {
+  color: var(--foreground);
+  /* Layered: faint terminal grid + radial glow over near-black */
+  background-color: var(--background);
+  background-image:
+    radial-gradient(900px circle at 12% -10%, rgba(34, 211, 238, 0.06), transparent 55%),
+    radial-gradient(800px circle at 95% 0%, rgba(251, 191, 36, 0.045), transparent 50%),
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 44px 44px, 44px 44px;
+  background-attachment: fixed;
+  font-feature-settings: "tnum" 1, "cv01" 1;
+}
+
+/* Tabular numbers everywhere data is shown — keeps columns aligned */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Refined dark scrollbar */
+::-webkit-scrollbar { height: 10px; width: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(120, 140, 160, 0.18);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(120, 140, 160, 0.32); background-clip: content-box; }
+
+/* Glassy panel used across the dashboard */
+.panel {
+  background: linear-gradient(160deg, rgba(20, 24, 28, 0.72), rgba(10, 12, 14, 0.72));
+  border: 1px solid rgba(120, 140, 160, 0.12);
+  backdrop-filter: blur(10px);
+}
+
+.panel-hover {
+  transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+.panel-hover:hover {
+  border-color: rgba(34, 211, 238, 0.4);
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.12), 0 8px 28px -12px rgba(0, 0, 0, 0.8);
+}
+
+/* RAG glow accents for cells */
+.glow-green { box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.35), 0 0 14px -6px rgba(34, 197, 94, 0.5); }
+.glow-amber { box-shadow: inset 0 0 0 1px rgba(251, 191, 36, 0.35), 0 0 14px -6px rgba(251, 191, 36, 0.5); }
+.glow-red   { box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.4),  0 0 14px -6px rgba(239, 68, 68, 0.55); }
+
+/* Live pulse dot */
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.5); }
+  70% { box-shadow: 0 0 0 6px rgba(34, 211, 238, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); }
+}
+.live-dot { animation: pulse-ring 2s infinite; }
+
+/* Entrance animation for staggered content */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise { animation: rise 420ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Ticker scroll for the signals marquee */
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.ticker-track {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: ticker 38s linear infinite;
+}
+.ticker-track:hover { animation-play-state: paused; }
+
+/* Section heading accent */
+.heading-mono {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  letter-spacing: 0.12em;
+}
