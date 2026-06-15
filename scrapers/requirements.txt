@@ -1,0 +1,9 @@
+fredapi
+yfinance
+pandas
+requests
+supabase
+python-dotenv
+wbdata
+schedule
+scrapling[fetchers]

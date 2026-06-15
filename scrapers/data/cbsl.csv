@@ -1,0 +1,7 @@
+indicator_id,country_id,date,value,source,source_series_id,ingested_at
+F1,SL,2026-06-01,21571.85,CBSL,https://tradingeconomics.com/sri-lanka/stock-market,2026-06-09T09:17:29.896050
+I1,SL,2026-05-01,5.5,CBSL,https://tradingeconomics.com/sri-lanka/inflation-cpi,2026-06-09T09:18:04.546378
+I3,SL,2026-05-01,3.9,CBSL,https://tradingeconomics.com/sri-lanka/food-inflation,2026-06-09T09:18:38.836891
+M1,SL,2026-05-01,8.75,CBSL,https://tradingeconomics.com/sri-lanka/interest-rate,2026-06-09T09:19:12.780137
+E2,SL,2026-04-01,6.766,CBSL,https://tradingeconomics.com/sri-lanka/foreign-exchange-reserves,2026-06-09T09:19:50.515899
+E3,SL,2026-04-01,767.9,CBSL,https://tradingeconomics.com/sri-lanka/remittances,2026-06-09T09:20:24.533179

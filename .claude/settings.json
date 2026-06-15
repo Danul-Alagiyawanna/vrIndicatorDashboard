@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(gh repo *)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(pip show *)",
+      "Bash(pip --version)",
+      "WebFetch(domain:pypi.org)",
+      "Bash(python -m scrapling install)",
+      "Bash(python -c \"from scrapling.fetchers import StealthyFetcher; print\\('import ok'\\)\")",
+      "Bash(python -c \"import scrapling; print\\(dir\\(scrapling\\)\\)\")",
+      "Bash(python -c \"from scrapling.cli import cli; cli\\(['install']\\)\")",
+      "Bash(python -c \"import scrapling.cli as c; print\\(dir\\(c\\)\\)\")",
+      "Bash(python -c \"from scrapling.cli import main; main\\(['install']\\)\")",
+      "Bash(python -c ' *)",
+      "Bash(python worldbank_scraper.py --dry-run)",
+      "Bash(python worldbank_scraper.py --local)",
+      "Bash(python yfinance_scraper.py --local)",
+      "Bash(del \"d:\\\\VRinvestments\\\\indicatorDashboard\\\\scrapers\\\\data\\\\F1.csv\" \"d:\\\\VRinvestments\\\\indicatorDashboard\\\\scrapers\\\\data\\\\F2.csv\" \"d:\\\\VRinvestments\\\\indicatorDashboard\\\\scrapers\\\\data\\\\C1.csv\")",
+      "Bash(Remove-Item \"d:\\\\VRinvestments\\\\indicatorDashboard\\\\scrapers\\\\data\\\\F1.csv\",\"d:\\\\VRinvestments\\\\indicatorDashboard\\\\scrapers\\\\data\\\\F2.csv\",\"d:\\\\VRinvestments\\\\indicatorDashboard\\\\scrapers\\\\data\\\\C1.csv\" -Force)",
+      "Bash(python sources/yfinance_scraper.py --dry-run)",
+      "Bash(python sources/cbsl_scraper.py --dry-run)",
+      "Bash(python sources/cbsl_scraper.py --local)",
+      "Bash(Remove-Item data/cbsl.csv -ErrorAction SilentlyContinue)",
+      "Bash(python sources/worldbank_scraper.py --dry-run)",
+      "Bash(python sources/worldbank_scraper.py --local)",
+      "Bash(python sources/fred_scraper.py --dry-run)",
+      "Bash(python sources/fred_scraper.py --local)",
+      "Bash(grep -v \"^$\")",
+      "Bash(python te_macro_scraper.py --dry-run)",
+      "PowerShell(Get-Process python -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Force)",
+      "Bash(python te_macro_scraper.py --local)",
+      "Bash(python inspect_tables.py)",
+      "WebFetch(domain:tradingeconomics.com)",
+      "Bash(python -c \"from scrapling.fetchers import StealthyFetcher; print\\('import OK'\\)\")",
+      "Bash(python _probe_investing.py)"
+    ]
+  }
+}
