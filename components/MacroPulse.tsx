@@ -1,4 +1,6 @@
 import { type RagDistribution, type Signal, type Mover, moverLabel } from '@/lib/analytics'
+import type { HeatmapCell } from '@/types/indicators'
+import BrentCrudeSignal from './BrentCrudeSignal'
 
 interface Props {
   dist: RagDistribution
@@ -7,6 +9,7 @@ interface Props {
   movers: { gainers: Mover[]; losers: Mover[] }
   countriesTracked: number
   indicatorsTracked: number
+  brentCell: HeatmapCell | null
 }
 
 const TONE_TEXT: Record<Signal['tone'], string> = {
@@ -33,6 +36,7 @@ export default function MacroPulse({
   movers,
   countriesTracked,
   indicatorsTracked,
+  brentCell,
 }: Props) {
   const greenPct = pct(dist.green, dist.scored)
   const amberPct = pct(dist.amber, dist.scored)
@@ -75,8 +79,9 @@ export default function MacroPulse({
           {/* ── Key signals ──────────────────────────────────────────── */}
           <div className="p-4 sm:p-5">
             <div className="heading-mono text-[10px] uppercase text-zinc-500 mb-3">Key Signals</div>
+            {/* All signals + Brent tile in the same 2-col grid */}
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {signals.slice(0, 4).map((s, i) => (
+              {signals.filter(s => !s.label.startsWith('Brent')).slice(0, 6).map((s, i) => (
                 <li key={i} className="flex items-start gap-2.5">
                   <span className={`mt-1 w-1.5 h-1.5 rounded-full shrink-0 ${TONE_DOT[s.tone]}`} />
                   <div className="min-w-0">
@@ -87,6 +92,12 @@ export default function MacroPulse({
                   </div>
                 </li>
               ))}
+              {/* Brent Crude pinned tile — sits in the next grid cell */}
+              {brentCell && (
+                <li>
+                  <BrentCrudeSignal cell={brentCell} />
+                </li>
+              )}
             </ul>
           </div>
 

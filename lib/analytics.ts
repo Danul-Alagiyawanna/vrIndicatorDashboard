@@ -163,13 +163,17 @@ export function keySignals(cells: HeatmapCell[]): Signal[] {
     signals.push({ label: 'No curve inversions', detail: 'Curves positively sloped', tone: 'positive' })
   }
 
-  // Brent crude regime
+  // Brent crude — kept in signals as fallback; the dashboard renders it as a
+  // dedicated BrentCrudeSignal tile and filters this entry out when brentCell exists.
   const brent = find('C1', 'GLOBAL') ?? cells.find(c => c.indicatorId === 'C1')
   if (brent && brent.value !== null) {
     const v = brent.value as number
+    const wowStr = brent.wowPct !== null
+      ? ` · ${brent.wowPct >= 0 ? '+' : ''}${brent.wowPct.toFixed(2)}% WoW`
+      : ''
     signals.push({
-      label: `Brent $${v.toFixed(0)}`,
-      detail: v > 100 ? 'Elevated — inflation pressure' : v > 80 ? 'Mid-range' : 'Subdued',
+      label: `Brent $${v.toFixed(1)}`,
+      detail: (v > 100 ? 'Elevated — inflation pressure' : v > 80 ? 'Mid-range' : 'Subdued') + wowStr,
       tone: v > 100 ? 'risk' : v > 80 ? 'watch' : 'positive',
     })
   }

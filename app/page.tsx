@@ -31,13 +31,15 @@ export default async function DashboardPage() {
   const signals = keySignals(cells)
   const regime = regimeRead(dist)
   const indicatorsTracked = new Set(cells.map(c => c.indicatorId)).size
+  // Brent Crude is a global series — pin as a standalone tile in Key Signals
+  const brentCell = cells.find(c => c.indicatorId === 'C1') ?? null
 
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
   })
 
   return (
-    <main className="min-h-screen text-white px-4 py-5 md:px-7 max-w-[1600px] mx-auto w-full overflow-x-clip">
+    <main className="min-h-screen text-white px-4 py-5 md:px-7 max-w-[1600px] mx-auto w-full">
       <NewDataBanner />
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
@@ -105,6 +107,7 @@ export default async function DashboardPage() {
             movers={movers}
             countriesTracked={COUNTRIES.length}
             indicatorsTracked={indicatorsTracked}
+            brentCell={brentCell}
           />
           <CountryHealthBar health={health} />
           <DashboardControls cells={cells} health={health} />

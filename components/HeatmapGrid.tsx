@@ -1,5 +1,6 @@
 'use client'
 
+import { useRef } from 'react'
 import type { HeatmapCell, RagStatus } from '@/types/indicators'
 import { CATEGORIES, COUNTRIES } from '@/types/indicators'
 import type { CountryHealth } from '@/lib/analytics'
@@ -42,9 +43,6 @@ const CATEGORY_INDICATORS: Record<string, { id: string; label: string; unit: str
     { id: 'E2', label: 'FX Reserves',  unit: 'USD bn' },
     { id: 'E3', label: 'Remittances',  unit: 'USD mn' },
   ],
-  'Commodities': [
-    { id: 'C1', label: 'Brent Crude',  unit: 'USD/bbl' },
-  ],
 }
 
 const CATEGORY_COLOR: Record<string, { bar: string; label: string }> = {
@@ -54,7 +52,6 @@ const CATEGORY_COLOR: Record<string, { bar: string; label: string }> = {
   'Labour Market':     { bar: 'bg-cyan-500',    label: 'text-cyan-400' },
   'Financial Markets': { bar: 'bg-emerald-500', label: 'text-emerald-400' },
   'External Sector':   { bar: 'bg-yellow-500',  label: 'text-yellow-400' },
-  'Commodities':       { bar: 'bg-rose-500',    label: 'text-rose-400' },
 }
 
 function scoreBar(score: number | null): string {
@@ -78,36 +75,53 @@ export default function HeatmapGrid({ cells, health, filter }: Props) {
   const gridCols =
     'grid-cols-[104px_repeat(6,minmax(76px,1fr))] sm:grid-cols-[150px_repeat(6,minmax(92px,1fr))]'
 
+  // The country header sits OUTSIDE the body scroller so it can stick to the page
+  // viewport on vertical scroll. We mirror the body's horizontal scroll into it so
+  // the two stay column-aligned while scrolling sideways.
+  const headerRef = useRef<HTMLDivElement>(null)
+  const bodyRef = useRef<HTMLDivElement>(null)
+  function syncHeader() {
+    if (headerRef.current && bodyRef.current) {
+      headerRef.current.scrollLeft = bodyRef.current.scrollLeft
+    }
+  }
+
+  const Header = (
+    <div ref={headerRef} className="w-full overflow-x-hidden">
+      <div className={`grid ${gridCols} gap-x-1.5`}>
+        <div className="flex items-end pb-0.5 sticky left-0 bg-[#070a0c]/95 z-10">
+          <span className="heading-mono text-[10px] uppercase text-zinc-600">Indicator</span>
+        </div>
+        {COUNTRIES.map(c => {
+          const h = healthById.get(c.id)
+          return (
+            <div key={c.id} className="text-center px-0.5">
+              <div className="text-white font-bold text-sm leading-none">{c.id}</div>
+              <div className={`text-[9px] font-semibold mt-0.5 ${c.classification === 'DM' ? 'text-cyan-400' : 'text-amber-400'}`}>
+                {c.classification} · {c.region.split(' ')[0]}
+              </div>
+              <div className="h-1 rounded-full bg-zinc-800/70 overflow-hidden mt-1.5">
+                <div className={`h-full ${scoreBar(h?.score ?? null)}`} style={{ width: `${h?.score ?? 0}%` }} />
+              </div>
+              <div className="text-[9px] text-zinc-600 tnum mt-0.5">{h?.score ?? '—'}</div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+
   return (
     <div className="panel rounded-2xl p-2.5 sm:p-4 rise" style={{ animationDelay: '120ms' }}>
-      {/* Horizontal scroll only. The cell detail popover is portaled to body, so
-          it's never clipped here regardless of overflow. */}
-      <div className="w-full overflow-x-auto">
-        {/* Header row with country + health bar */}
-        <div className={`grid ${gridCols} gap-x-1.5 mb-3 sticky top-0 bg-[#070a0c]/90 backdrop-blur z-20 pb-3 border-b border-zinc-800/70`}>
-          <div className="flex items-end pb-0.5 sticky left-0 bg-[#070a0c]/90 z-10">
-            <span className="heading-mono text-[10px] uppercase text-zinc-600">Indicator</span>
-          </div>
-          {COUNTRIES.map(c => {
-            const h = healthById.get(c.id)
-            return (
-              <div key={c.id} className="text-center px-0.5">
-                <div className="text-white font-bold text-sm leading-none">{c.id}</div>
-                <div className={`text-[9px] font-semibold mt-0.5 ${c.classification === 'DM' ? 'text-cyan-400' : 'text-amber-400'}`}>
-                  {c.classification} · {c.region.split(' ')[0]}
-                </div>
-                {/* mini health track */}
-                <div className="h-1 rounded-full bg-zinc-800/70 overflow-hidden mt-1.5">
-                  <div className={`h-full ${scoreBar(h?.score ?? null)}`} style={{ width: `${h?.score ?? 0}%` }} />
-                </div>
-                <div className="text-[9px] text-zinc-600 tnum mt-0.5">{h?.score ?? '—'}</div>
-              </div>
-            )
-          })}
-        </div>
+      {/* Sticky country header — pinned to the viewport top during page scroll. */}
+      <div className="sticky top-0 z-30 -mx-2.5 sm:-mx-4 px-2.5 sm:px-4 pt-0.5 pb-3 mb-3 bg-[#070a0c]/95 backdrop-blur border-b border-zinc-800/70">
+        {Header}
+      </div>
 
+      {/* Body — horizontal scroll; mirrors its scroll position into the header. */}
+      <div ref={bodyRef} onScroll={syncHeader} className="w-full overflow-x-auto">
         {/* Category sections */}
-        {CATEGORIES.map(category => {
+        {CATEGORIES.filter(category => category !== 'Commodities').map(category => {
           const indicators = CATEGORY_INDICATORS[category] ?? []
           const color = CATEGORY_COLOR[category] ?? { bar: 'bg-zinc-600', label: 'text-zinc-400' }
 
