@@ -22,10 +22,12 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Never let a wide child (ticker, heatmap) force the whole page to scroll
-   horizontally — only the intended inner containers scroll sideways. */
-html, body {
-  overflow-x: hidden;
+/* Guard against horizontal page overflow from wide children (ticker, heatmap)
+   WITHOUT breaking `position: sticky`. `overflow-x: clip` does not establish a
+   scroll container, so descendant sticky headers still pin to the viewport —
+   unlike `overflow-x: hidden`, which would trap them. */
+html {
+  overflow-x: clip;
   max-width: 100%;
 }
 
